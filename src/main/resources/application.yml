@@ -1,0 +1,22 @@
+server:
+  port: ${SERVER_PORT:8086}
+
+spring:
+  application:
+    name: nexo-reportes-api
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:citas_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+# Ruta de la plantilla xlsx oficial de vacunacion (configurable). Si no existe,
+# se intenta usar la incrustada en resources (si se copio en el build).
+reporte:
+  template-path: ${REPORTE_TEMPLATE_PATH:}
+  departamento: ${REPORTE_DEPARTAMENTO:CAUCA}
+
+logging:
+  level:
+    root: INFO
+    com.nexo: ${LOG_LEVEL_NEXO:DEBUG}
