@@ -1,0 +1,64 @@
+# =========================================================================
+# Outils de Build (Compilation et Dépendances)
+# =========================================================================
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# Éviter d'ignorer l'extension Maven Wrapper si présente
+!.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+build/
+.gradle/
+/out/
+!gradle/wrapper/gradle-wrapper.jar
+
+# =========================================================================
+# Configuration Spring Boot et Fichiers Sensibles
+# =========================================================================
+*.log
+*.tmp
+logs/
+.env
+.sts4-cache/
+.springBeans/
+
+# Secrets / Fichiers de propriétés locaux (décocher si vous utilisez des profils locaux)
+# application-local.properties
+# application-local.yml
+
+# =========================================================================
+# Environnements de Développement (IDEs)
+# =========================================================================
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse / Spring Tool Suite (STS)
+.metadata/
+.classpath
+.project
+.settings/
+*.launch
+.factorypath
+
+# Visual Studio Code
+.vscode/
+
+# =========================================================================
+# Fichiers Système (OS)
+# =========================================================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
