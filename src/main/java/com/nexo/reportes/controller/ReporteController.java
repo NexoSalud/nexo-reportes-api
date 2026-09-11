@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,6 +28,9 @@ public class ReporteController {
 
     private final ReporteVacunacionService reporteService;
     private final CitaReporteRepository citaRepository;
+
+    @Value("${reporte.preview-max-rows:1000}")
+    private int previewMaxRows;
 
     public ReporteController(ReporteVacunacionService reporteService,
                              CitaReporteRepository citaRepository) {
@@ -47,12 +53,15 @@ public class ReporteController {
             @RequestParam(required = false) Integer anio,
             HttpServletResponse response) throws IOException {
 
-        List<CitaReporteRow> citas = citaRepository.listarCitasVacunacion(anio);
+        Integer mesNumero = mesNumero(mes);
+        List<CitaReporteRow> citas = citaRepository.listarCitasVacunacion(anio, mesNumero);
         Integer year = anio != null ? anio : java.time.LocalDate.now().getYear();
         String nombre = "Reporte_Vacunacion_" + (mes != null ? mes : "MENSUAL")
                 + "_" + year + ".xlsx";
 
         response.setContentType(XLSX_MIME);
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store, max-age=0");
+        response.setHeader(HttpHeaders.PRAGMA, "no-cache");
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + nombre + "\"");
 
@@ -64,7 +73,26 @@ public class ReporteController {
     /** Vista previa (JSON) de las citas que alimentaran el reporte. */
     @GetMapping(value = "/vacunacion/preview", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CitaReporteRow>> preview(
-            @RequestParam(required = false) Integer anio) {
-        return ResponseEntity.ok(citaRepository.listarCitasVacunacion(anio));
+            @RequestParam(required = false) Integer anio,
+            @RequestParam(required = false) String mes) {
+        Integer mesNumero = mesNumero(mes);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CACHE_CONTROL, "no-store, max-age=0")
+                .header(HttpHeaders.PRAGMA, "no-cache")
+                .body(citaRepository.listarCitasVacunacion(anio, mesNumero, previewMaxRows));
+    }
+
+    private Integer mesNumero(String mes) {
+        if (mes == null || mes.isBlank()) {
+            return null;
+        }
+        return switch (mes.trim().toUpperCase()) {
+            case "ENERO" -> 1; case "FEBRERO" -> 2; case "MARZO" -> 3;
+            case "ABRIL" -> 4; case "MAYO" -> 5; case "JUNIO" -> 6;
+            case "JULIO" -> 7; case "AGOSTO" -> 8; case "SEPTIEMBRE" -> 9;
+            case "OCTUBRE" -> 10; case "NOVIEMBRE" -> 11; case "DICIEMBRE" -> 12;
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Mes invalido: " + mes);
+        };
     }
 }

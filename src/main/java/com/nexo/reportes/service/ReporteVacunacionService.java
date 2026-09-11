@@ -123,12 +123,7 @@ public class ReporteVacunacionService {
     }
 
     private static List<CitaReporteRow> aplicadas(List<CitaReporteRow> citas) {
-        List<CitaReporteRow> aplicadas =
-                citas.stream().filter(CitaReporteRow::estaAplicada).toList();
-        if (aplicadas.isEmpty()) {
-            aplicadas = citas; // demo: si ninguna esta APLICADA, se toman todas
-        }
-        return aplicadas;
+        return citas.stream().filter(CitaReporteRow::estaAplicada).toList();
     }
 
     // ------------------------------------------------------------------

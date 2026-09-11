@@ -25,10 +25,13 @@ public class CitaReporteRepository {
     }
 
     /**
-     * Trae las citas de vacunacion (todas, o filtradas por anio de la fecha).
-     * @param anio si no es null, filtra por EXTRACT(YEAR FROM fecha) = anio
+     * Trae las citas de vacunacion filtradas opcionalmente por anio y mes.
      */
-    public List<CitaReporteRow> listarCitasVacunacion(Integer anio) {
+    public List<CitaReporteRow> listarCitasVacunacion(Integer anio, Integer mes) {
+        return listarCitasVacunacion(anio, mes, null);
+    }
+
+    public List<CitaReporteRow> listarCitasVacunacion(Integer anio, Integer mes, Integer limite) {
         String sql = """
             SELECT c.id,
                    c.paciente_id,
@@ -40,9 +43,13 @@ public class CitaReporteRepository {
             FROM cita c
             LEFT JOIN especialidad_tipo e ON e.id = c.especialidad_tipo_id
             WHERE e.codigo = 'VACUNACION'
-              AND (? IS NULL OR EXTRACT(YEAR FROM c.fecha) = ?)
+              AND (CAST(? AS INTEGER) IS NULL OR EXTRACT(YEAR FROM c.fecha) = CAST(? AS INTEGER))
+                            AND (CAST(? AS INTEGER) IS NULL OR EXTRACT(MONTH FROM c.fecha) = CAST(? AS INTEGER))
             ORDER BY c.fecha
-            """;
+                        """ + (limite != null ? " LIMIT ?" : "");
+                Object[] parametros = limite == null
+                                ? new Object[]{anio, anio, mes, mes}
+                                : new Object[]{anio, anio, mes, mes, limite};
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             String perfilJson = rs.getString("perfil_paciente_snapshot");
             JsonNode p = leerPerfil(perfilJson);
@@ -58,7 +65,7 @@ public class CitaReporteRepository {
                     p != null && p.hasNonNull("etnia") ? p.get("etnia").asText() : null,
                     p != null && p.hasNonNull("ubicacion") ? p.get("ubicacion").asText() : null
             );
-        }, anio, anio);
+        }, parametros);
     }
 
     private JsonNode leerPerfil(String perfilJson) {
