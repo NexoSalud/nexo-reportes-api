@@ -17,12 +17,12 @@ COPY templates/plantilla_vacunacion.xlsx /app/templates/plantilla_vacunacion.xls
 
 COPY --from=builder /app/target/*.jar app.jar
 
-EXPOSE 8086
+EXPOSE 8091
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
-	CMD curl -fsS http://localhost:8086/actuator/health || exit 1
+	CMD curl -fsS http://localhost:8091/actuator/health || exit 1
 
-ENV SERVER_PORT=8086
+ENV SERVER_PORT=8091
 ENV REPORTE_TEMPLATE_PATH=/app/templates/plantilla_vacunacion.xlsx
 
 CMD ["java", "-Xmx6g", "-jar", "app.jar"]

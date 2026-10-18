@@ -5,7 +5,7 @@ citas de vacunacion aplicadas y expone una vista previa JSON.
 
 ## Contrato HTTP
 
-El backend escucha en `8086` y publica mediante KrakenD:
+El backend escucha en `8091` y publica mediante KrakenD:
 
 - `GET /api/v1/reportes/vacunacion?mes=JULIO&anio=2026`: descarga el XLSX.
 - `GET /api/v1/reportes/vacunacion/preview?mes=JULIO&anio=2026`: devuelve hasta
@@ -42,17 +42,17 @@ La plantilla se busca en `REPORTE_TEMPLATE_PATH`; en Docker se copia a
 `/app/templates/plantilla_vacunacion.xlsx`. El healthcheck es:
 
 ```text
-GET http://localhost:8086/actuator/health
+GET http://localhost:8091/actuator/health
 ```
 
 ## Coolify
 
 Construir desde `Dockerfile` o desplegar una imagen publicada. Configurar el
-servicio en el puerto `8086`, PostgreSQL accesible con `DB_*`, y montar o
+servicio en el puerto `8091`, PostgreSQL accesible con `DB_*`, y montar o
 incluir la plantilla oficial. En el gateway configurar:
 
 ```text
-REPORTES_SERVICE_HOST=http://nexo-reportes-api:8086
+REPORTES_SERVICE_HOST=http://nexo-reportes-api:8091
 ```
 
 Gateway y reportes deben compartir la red de Coolify. Configurar tambien

@@ -18,7 +18,7 @@ de una lectura heredada de `citas_db` y se consume desde `frontend-citas`.
 - Backend: `repos/nexo-reportes-api`.
 - Frontend consumidor: `repos/Frontend/apps/frontend-citas`.
 - Gateway: `repos/gateway/config/templates/reportes.tmpl`.
-- Puerto backend: `8086`.
+- Puerto backend: `8091`.
 - Ruta frontend: `/api/proxy/reportes/...`.
 
 Leer tambien `.agents/skills/nexo-frontend/SKILL.md` y
@@ -35,7 +35,7 @@ proxy, gateway, Keycloak o Coolify.
 El navegador nunca llama al gateway directamente. El flujo es:
 
 ```text
-frontend-citas -> /api/proxy/reportes -> KrakenD -> nexo-reportes-api:8086
+frontend-citas -> /api/proxy/reportes -> KrakenD -> nexo-reportes-api:8091
 ```
 
 La plantilla oficial se carga desde `REPORTE_TEMPLATE_PATH` o desde
@@ -81,7 +81,7 @@ no cachear respuestas de pacientes. Evitar cargar dos veces el XLSX completo.
 
 ## Coolify y Docker
 
-Verificar siempre las cuatro superficies del puerto `8086`:
+Verificar siempre las cuatro superficies del puerto `8091`:
 
 1. `application.yml` (`SERVER_PORT`).
 2. `Dockerfile` (`EXPOSE`, `ENV`, healthcheck).
@@ -97,7 +97,7 @@ GET /actuator/health
 Variables minimas:
 
 ```text
-SERVER_PORT=8086
+SERVER_PORT=8091
 DB_HOST=<host de citas_db>
 DB_PORT=5432
 DB_NAME=citas_db
@@ -148,7 +148,7 @@ docker compose -f repos/gateway/docker-compose.yml config -q
 | Preview demasiado grande | `REPORTE_PREVIEW_MAX_ROWS` y filtro mensual. |
 | Reporte incluye canceladas | Fallback en `ReporteVacunacionService.aplicadas`. |
 | `Failed to fetch` al descargar | Heap/streaming, timeout de 120s y plantilla. |
-| 502 | Puerto 8086, `REPORTES_SERVICE_HOST`, red Coolify o DB. |
+| 502 | Puerto 8091, `REPORTES_SERVICE_HOST`, red Coolify o DB. |
 | Datos antiguos | Cache global del gateway; reportes siempre debe usar `no-store`. |
 | Healthcheck falla | Actuator, curl en imagen y `/actuator/health`. |
 | SQL no inicia | Acceso a `citas_db`, esquema compartido o parametros JDBC. |
